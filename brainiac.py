@@ -1,15 +1,24 @@
+import os
 from dotenv import load_dotenv
 load_dotenv()
-import os
 
 import discord
+intents = discord.Intents.default()
+intents.message_content = True
+from discord.ext import commands
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print(f'Logged on as {self.user}!')
+from Cogs_Test.test_cog import test_cog
 
-    async def on_message(self, message):
-        print(f'Message from {message.author}: {message.content}')
+Brainiac = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
 
-client = MyClient()
-client.run(os.environ.get("BOT-TOKEN"))
+@Brainiac.event
+async def on_ready():
+    print(f'Logged in as {Brainiac.user}!')
+
+@Brainiac.event
+async def on_message(message):
+    print(f'Message from {message.author}: {message.content}')
+
+Brainiac.add_cog(test_cog(Brainiac))
+
+Brainiac.run(os.getenv('BOT-TOKEN'))
